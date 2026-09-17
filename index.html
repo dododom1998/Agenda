@@ -24,7 +24,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
         }
 
@@ -90,7 +90,7 @@
         .card.prog .value { color: var(--accent-prog); }
         .card.straord .value { color: var(--accent-straord); }
 
-        /* Days Table */
+        /* Days List */
         .days-list {
             display: flex;
             flex-direction: column;
@@ -107,11 +107,17 @@
             align-items: center;
             justify-content: space-between;
             gap: 15px;
+            border-left: 5px solid transparent;
         }
 
+        /* Stile differenziato per il fine settimana */
         .day-row.weekend {
-            background: #f0f0f0;
-            opacity: 0.7;
+            background-color: #fff3e0;
+            border-left-color: #f39c12;
+        }
+
+        .day-row.weekend .day-info {
+            color: #d35400;
         }
 
         .day-info {
@@ -144,6 +150,11 @@
             border: 1px solid #e9ecef;
         }
 
+        .shift-block.active-ord {
+            background: #ebf5fb;
+            border-color: var(--secondary);
+        }
+
         .shift-block.active-prog {
             background: #fef5ec;
             border-color: var(--accent-prog);
@@ -165,7 +176,7 @@
             user-select: none;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .day-row {
                 flex-direction: column;
                 align-items: flex-start;
@@ -191,7 +202,7 @@
     <!-- Dashboard Riepilogo Ore -->
     <div class="summary-cards">
         <div class="card">
-            <h3>Ore Ordinarie (8-14)</h3>
+            <h3>Ore Ordinarie</h3>
             <div class="value" id="totalOrd">0h</div>
         </div>
         <div class="card prog">
@@ -209,12 +220,11 @@
 </div>
 
 <script>
-    // Inizializza mese corrente se non selezionato
+    // Inizializza mese corrente
     const today = new Date();
     const monthPicker = document.getElementById('monthSelect');
     monthPicker.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
-    // Chiave localStorage
     function getStorageKey(dateStr) {
         return `agenda_shift_${dateStr}`;
     }
@@ -235,16 +245,15 @@
             const dayOfWeek = currentDate.getDay(); // 0 = Dom, 1 = Lun, ..., 6 = Sab
             const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             
-            // Nomi dei giorni
             const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
             const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
             // Carica dati salvati o imposta defaults
-            const savedData = JSON.parse(localStorage.getItem(getStorageKey(dateStr))) || getDefaults(dayOfWeek);
+            const savedData = JSON.parse(localStorage.getItem(getStorageKey(dateStr))) || getDefaults(dayOfWeek, year, month, day);
 
             // Calcolo ore
-            if (savedData.baseActive && !isWeekend) {
-                sumOrdMinutes += calculateMinutes('08:00', '14:00');
+            if (savedData.baseActive) {
+                sumOrdMinutes += calculateMinutes(savedData.baseStart, savedData.baseEnd);
             }
 
             if (savedData.progActive) {
@@ -266,13 +275,17 @@
                 </div>
                 
                 <div class="shift-group">
-                    <!-- Turno Base -->
-                    ${!isWeekend ? `
-                    <div class="shift-block">
+                    <!-- Turno Base / Ordinario -->
+                    <div class="shift-block ${savedData.baseActive ? 'active-ord' : ''}">
                         <input type="checkbox" id="base_${dateStr}" ${savedData.baseActive ? 'checked' : ''} 
                             onchange="updateShift('${dateStr}', 'baseActive', this.checked)">
-                        <label for="base_${dateStr}">Ordinario (8-14)</label>
-                    </div>` : '<div class="shift-block">Riposo</div>'}
+                        <label for="base_${dateStr}"><strong>Ord.</strong></label>
+                        <input type="time" value="${savedData.baseStart}" 
+                            onchange="updateShift('${dateStr}', 'baseStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.baseEnd}" 
+                            onchange="updateShift('${dateStr}', 'baseEnd', this.value)">
+                    </div>
 
                     <!-- Straordinario Programmato -->
                     <div class="shift-block ${savedData.progActive ? 'active-prog' : ''}">
@@ -310,28 +323,48 @@
     }
 
     // Default per giorno della settimana
-    function getDefaults(dayOfWeek) {
+    function getDefaults(dayOfWeek, year, month, day) {
         const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+        // Se siamo a Settembre 2026 prima del 17, imposta tutto disattivato
+        if (year === 2026 && month === 9 && day < 17) {
+            return {
+                baseActive: false,
+                baseStart: '08:00',
+                baseEnd: '14:00',
+                progActive: false,
+                progStart: '15:00',
+                progEnd: '18:00',
+                extraActive: false,
+                extraStart: '14:30',
+                extraEnd: '17:00'
+            };
+        }
         
-        // Di base: Martedì (2) e Giovedì (4) attivo Programmato
+        // Martedì (2) e Giovedì (4) attivo Programmato
         const isProgDay = (dayOfWeek === 2 || dayOfWeek === 4);
         
-        // Di base: Lunedì (1), Mercoledì (3), Venerdì (5) suggerito Extra
+        // Lunedì (1), Mercoledì (3), Venerdì (5) attivo Extra
         const isExtraDay = (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5);
 
         return {
             baseActive: !isWeekend,
+            baseStart: '08:00',
+            baseEnd: '14:00',
+            
             progActive: isProgDay,
             progStart: '15:00',
             progEnd: '18:00',
-            extraActive: false, // Lasciato deselezionato per default per conferma giornaliera
+            
+            extraActive: isExtraDay,
             extraStart: '14:30',
             extraEnd: '17:00'
         };
     }
 
     function updateShift(dateStr, key, value) {
-        const current = JSON.parse(localStorage.getItem(getStorageKey(dateStr))) || getDefaults(new Date(dateStr).getDay());
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const current = JSON.parse(localStorage.getItem(getStorageKey(dateStr))) || getDefaults(new Date(dateStr).getDay(), year, month, day);
         current[key] = value;
         localStorage.setItem(getStorageKey(dateStr), JSON.stringify(current));
         renderCalendar();
@@ -351,7 +384,6 @@
         return m > 0 ? `${h}h ${m}m` : `${h}h`;
     }
 
-    // Avvio al caricamento della pagina
     renderCalendar();
 </script>
 
