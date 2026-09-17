@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Lavorativa & Straordinari</title>
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #4a90e2;
+            --accent-prog: #e67e22;
+            --accent-straord: #27ae60;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        /* Controls */
+        .month-picker {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .month-picker input {
+            padding: 8px 12px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Summary Dashboard */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+
+        .card.prog { border-top-color: var(--accent-prog); }
+        .card.straord { border-top-color: var(--accent-straord); }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .card.prog .value { color: var(--accent-prog); }
+        .card.straord .value { color: var(--accent-straord); }
+
+        /* Days Table */
+        .days-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .day-row {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .day-row.weekend {
+            background: #f0f0f0;
+            opacity: 0.7;
+        }
+
+        .day-info {
+            font-weight: bold;
+            width: 140px;
+        }
+
+        .day-info span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: normal;
+            color: #666;
+        }
+
+        .shift-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .shift-block {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .shift-block.active-prog {
+            background: #fef5ec;
+            border-color: var(--accent-prog);
+        }
+
+        .shift-block.active-straord {
+            background: #eafaf1;
+            border-color: var(--accent-straord);
+        }
+
+        input[type="time"] {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+
+        label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        @media (max-width: 600px) {
+            .day-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .shift-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Agenda Lavorativa</h1>
+
+    <!-- Selezione Mese -->
+    <div class="month-picker">
+        <label for="monthSelect"><strong>Seleziona Mese:</strong></label>
+        <input type="month" id="monthSelect" onchange="renderCalendar()">
+    </div>
+
+    <!-- Dashboard Riepilogo Ore -->
+    <div class="summary-cards">
+        <div class="card">
+            <h3>Ore Ordinarie (8-14)</h3>
+            <div class="value" id="totalOrd">0h</div>
+        </div>
+        <div class="card prog">
+            <h3>Straordinario Programmato</h3>
+            <div class="value" id="totalProg">0h</div>
+        </div>
+        <div class="card straord">
+            <h3>Straordinario Ordinario</h3>
+            <div class="value" id="totalExtra">0h</div>
+        </div>
+    </div>
+
+    <!-- Lista Giorni -->
+    <div class="days-list" id="daysContainer"></div>
+</div>
+
+<script>
+    // Inizializza mese corrente se non selezionato
+    const today = new Date();
+    const monthPicker = document.getElementById('monthSelect');
+    monthPicker.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+    // Chiave localStorage
+    function getStorageKey(dateStr) {
+        return `agenda_shift_${dateStr}`;
+    }
+
+    function renderCalendar() {
+        const [year, month] = monthPicker.value.split('-').map(Number);
+        const daysContainer = document.getElementById('daysContainer');
+        daysContainer.innerHTML = '';
+
+        const daysInMonth = new Date(year, month, 0).getDate();
+
+        let sumOrdMinutes = 0;
+        let sumProgMinutes = 0;
+        let sumExtraMinutes = 0;
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const currentDate = new Date(year, month - 1, day);
+            const dayOfWeek = currentDate.getDay(); // 0 = Dom, 1 = Lun, ..., 6 = Sab
+            const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            
+            // Nomi dei giorni
+            const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+            // Carica dati salvati o imposta defaults
+            const savedData = JSON.parse(localStorage.getItem(getStorageKey(dateStr))) || getDefaults(dayOfWeek);
+
+            // Calcolo ore
+            if (savedData.baseActive && !isWeekend) {
+                sumOrdMinutes += calculateMinutes('08:00', '14:00');
+            }
+
+            if (savedData.progActive) {
+                sumProgMinutes += calculateMinutes(savedData.progStart, savedData.progEnd);
+            }
+
+            if (savedData.extraActive) {
+                sumExtraMinutes += calculateMinutes(savedData.extraStart, savedData.extraEnd);
+            }
+
+            // Generazione elemento HTML per il giorno
+            const row = document.createElement('div');
+            row.className = `day-row ${isWeekend ? 'weekend' : ''}`;
+            
+            row.innerHTML = `
+                <div class="day-info">
+                    ${day} ${dayNames[dayOfWeek].substring(0, 3)}
+                    <span>${dateStr}</span>
+                </div>
+                
+                <div class="shift-group">
+                    <!-- Turno Base -->
+                    ${!isWeekend ? `
+                    <div class="shift-block">
+                        <input type="checkbox" id="base_${dateStr}" ${savedData.baseActive ? 'checked' : ''} 
+                            onchange="updateShift('${dateStr}', 'baseActive', this.checked)">
+                        <label for="base_${dateStr}">Ordinario (8-14)</label>
+                    </div>` : '<div class="shift-block">Riposo</div>'}
+
+                    <!-- Straordinario Programmato -->
+                    <div class="shift-block ${savedData.progActive ? 'active-prog' : ''}">
+                        <input type="checkbox" id="prog_${dateStr}" ${savedData.progActive ? 'checked' : ''} 
+                            onchange="updateShift('${dateStr}', 'progActive', this.checked)">
+                        <label for="prog_${dateStr}"><strong>Prog.</strong></label>
+                        <input type="time" value="${savedData.progStart}" 
+                            onchange="updateShift('${dateStr}', 'progStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.progEnd}" 
+                            onchange="updateShift('${dateStr}', 'progEnd', this.value)">
+                    </div>
+
+                    <!-- Straordinario Ordinario -->
+                    <div class="shift-block ${savedData.extraActive ? 'active-straord' : ''}">
+                        <input type="checkbox" id="extra_${dateStr}" ${savedData.extraActive ? 'checked' : ''} 
+                            onchange="updateShift('${dateStr}', 'extraActive', this.checked)">
+                        <label for="extra_${dateStr}"><strong>Extra</strong></label>
+                        <input type="time" value="${savedData.extraStart}" 
+                            onchange="updateShift('${dateStr}', 'extraStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.extraEnd}" 
+                            onchange="updateShift('${dateStr}', 'extraEnd', this.value)">
+                    </div>
+                </div>
+            `;
+
+            daysContainer.appendChild(row);
+        }
+
+        // Aggiorna Dashboard dei Totali
+        document.getElementById('totalOrd').innerText = formatHours(sumOrdMinutes);
+        document.getElementById('totalProg').innerText = formatHours(sumProgMinutes);
+        document.getElementById('totalExtra').innerText = formatHours(sumExtraMinutes);
+    }
+
+    // Default per giorno della settimana
+    function getDefaults(dayOfWeek) {
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+        
+        // Di base: Martedì (2) e Giovedì (4) attivo Programmato
+        const isProgDay = (dayOfWeek === 2 || dayOfWeek === 4);
+        
+        // Di base: Lunedì (1), Mercoledì (3), Venerdì (5) suggerito Extra
+        const isExtraDay = (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5);
+
+        return {
+            baseActive: !isWeekend,
+            progActive: isProgDay,
+            progStart: '15:00',
+            progEnd: '18:00',
+            extraActive: false, // Lasciato deselezionato per default per conferma giornaliera
+            extraStart: '14:30',
+            extraEnd: '17:00'
+        };
+    }
+
+    function updateShift(dateStr, key, value) {
+        const current = JSON.parse(localStorage.getItem(getStorageKey(dateStr))) || getDefaults(new Date(dateStr).getDay());
+        current[key] = value;
+        localStorage.setItem(getStorageKey(dateStr), JSON.stringify(current));
+        renderCalendar();
+    }
+
+    function calculateMinutes(start, end) {
+        if (!start || !end) return 0;
+        const [h1, m1] = start.split(':').map(Number);
+        const [h2, m2] = end.split(':').map(Number);
+        let diff = (h2 * 60 + m2) - (h1 * 60 + m1);
+        return diff > 0 ? diff : 0;
+    }
+
+    function formatHours(minutes) {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return m > 0 ? `${h}h ${m}m` : `${h}h`;
+    }
+
+    // Avvio al caricamento della pagina
+    renderCalendar();
+</script>
+
+</body>
+</html>
