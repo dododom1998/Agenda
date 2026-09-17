@@ -48,7 +48,7 @@
         h1 {
             color: var(--primary);
             margin: 0;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
         }
 
         .view-toggle-btn {
@@ -82,11 +82,11 @@
             border-radius: 4px;
         }
 
-        /* 4 Quadranti Compatti */
+        /* 4 Quadranti Ingranditi */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
+            gap: 8px;
             margin-bottom: 8px;
         }
 
@@ -96,25 +96,26 @@
 
         .card {
             background: var(--card-bg);
-            padding: 6px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 10px 6px; /* Spazio interno aumentato */
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
             text-align: center;
-            border-top: 3px solid var(--primary);
+            border-top: 4px solid var(--primary);
         }
 
         .card.prog { border-top-color: var(--accent-prog); }
         .card.straord { border-top-color: var(--accent-straord); }
 
         .card h3 {
-            margin: 0 0 2px 0;
-            font-size: 0.65rem;
+            margin: 0 0 3px 0;
+            font-size: 0.7rem;
             color: #666;
             text-transform: uppercase;
+            font-weight: 700;
         }
 
         .card .value {
-            font-size: 1.1rem;
+            font-size: 1.35rem; /* Font numeri ingrandito */
             font-weight: bold;
             color: var(--primary);
             line-height: 1.1;
@@ -124,13 +125,13 @@
         .card.straord .value { color: var(--accent-straord); }
 
         .card .sub-value {
-            font-size: 0.65rem;
-            margin-top: 2px;
+            font-size: 0.7rem;
+            margin-top: 3px;
             font-weight: 600;
             color: #555;
         }
 
-        /* Calendario Griglia */
+        /* Calendario Griglia Compatto (Altezza Ridotta) */
         #mobileCalendarView {
             display: none;
             flex-direction: column;
@@ -152,28 +153,29 @@
             font-weight: bold;
             font-size: 0.7rem;
             color: #666;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 3px;
             flex-grow: 1;
         }
 
         .cal-day-cell {
             background: var(--card-bg);
-            border-radius: 6px;
-            padding: 4px 2px;
+            border-radius: 5px;
+            padding: 2px 1px; /* Padding minimo per ridurre altezza */
             text-align: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
             cursor: pointer;
             border: 1px solid transparent;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center; /* Centratura verticale */
+            gap: 1px;
         }
 
         .cal-day-cell.weekend { background-color: #fff3e0; }
@@ -181,18 +183,18 @@
 
         .cal-day-num {
             font-weight: bold;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            line-height: 1;
         }
 
         .cal-day-badges {
             display: flex;
             gap: 2px;
-            margin-top: 2px;
         }
 
         .dot-badge {
-            width: 5px;
-            height: 5px;
+            width: 4px;
+            height: 4px;
             border-radius: 50%;
         }
 
@@ -352,7 +354,7 @@
         <input type="month" id="monthSelect" onchange="renderCalendar()">
     </div>
 
-    <!-- 4 Quadranti -->
+    <!-- 4 Quadranti Ingranditi -->
     <div class="summary-cards">
         <div class="card">
             <h3>Ore Ordinarie</h3>
@@ -376,7 +378,7 @@
         </div>
     </div>
 
-    <!-- VISTA MOBILE (Griglia Calendario) -->
+    <!-- VISTA MOBILE (Griglia Calendario Compatta) -->
     <div id="mobileCalendarView">
         <div class="calendar-weekdays">
             <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
@@ -499,7 +501,7 @@
 
             calCell.innerHTML = `
                 <div class="cal-day-num">${day}</div>
-                ${hasAbsence ? `<span style="font-size:0.6rem; font-weight:bold; color:#e91e63;">${savedData.absence}</span>` : badgesHtml}
+                ${hasAbsence ? `<span style="font-size:0.55rem; font-weight:bold; color:#e91e63; line-height:1;">${savedData.absence}</span>` : badgesHtml}
             `;
             calGrid.appendChild(calCell);
 
@@ -682,7 +684,7 @@
         updateShift(dateStr, key, value);
         const [year, month, day] = dateStr.split('-').map(Number);
         const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-        openDayModal(year, month, day, dayNames); // Rinfresca contenuto modal
+        openDayModal(year, month, day, dayNames);
     }
 
     function calculateMinutes(start, end) {
