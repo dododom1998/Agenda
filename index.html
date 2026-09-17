@@ -24,7 +24,7 @@
         }
 
         .container {
-            max-width: 950px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
@@ -57,14 +57,14 @@
         /* Summary Dashboard */
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 18px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             text-align: center;
@@ -76,19 +76,26 @@
 
         .card h3 {
             margin: 0 0 10px 0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
             text-transform: uppercase;
         }
 
         .card .value {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
             color: var(--primary);
         }
 
         .card.prog .value { color: var(--accent-prog); }
         .card.straord .value { color: var(--accent-straord); }
+
+        .card .sub-value {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            font-weight: 600;
+            color: #555;
+        }
 
         /* Days List */
         .days-list {
@@ -106,23 +113,23 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            gap: 12px;
             border-left: 5px solid transparent;
         }
 
-        /* Stile differenziato per il fine settimana */
         .day-row.weekend {
             background-color: #fff3e0;
             border-left-color: #f39c12;
         }
 
-        .day-row.weekend .day-info {
-            color: #d35400;
+        .day-row.absence-active {
+            background-color: #fce4ec;
+            border-left-color: #e91e63;
         }
 
         .day-info {
             font-weight: bold;
-            width: 140px;
+            width: 130px;
         }
 
         .day-info span {
@@ -165,6 +172,14 @@
             border-color: var(--accent-straord);
         }
 
+        select.absence-select {
+            padding: 5px 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-weight: bold;
+            background-color: #fff;
+        }
+
         input[type="time"] {
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -176,7 +191,7 @@
             user-select: none;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 768px) {
             .day-row {
                 flex-direction: column;
                 align-items: flex-start;
@@ -199,19 +214,27 @@
         <input type="month" id="monthSelect" onchange="renderCalendar()">
     </div>
 
-    <!-- Dashboard Riepilogo Ore -->
+    <!-- Dashboard Riepilogo Ore e Compensi -->
     <div class="summary-cards">
         <div class="card">
             <h3>Ore Ordinarie</h3>
             <div class="value" id="totalOrd">0h</div>
+            <div class="sub-value" id="countAbsence">Assenze: 0</div>
         </div>
         <div class="card prog">
-            <h3>Straordinario Programmato</h3>
+            <h3>Straordinario Prog.</h3>
             <div class="value" id="totalProg">0h</div>
+            <div class="sub-value" id="payProg" style="color: var(--accent-prog);">€ 0,00 (Mese succ.)</div>
         </div>
         <div class="card straord">
-            <h3>Straordinario Ordinario</h3>
+            <h3>Straordinario Extra</h3>
             <div class="value" id="totalExtra">0h</div>
+            <div class="sub-value" id="payExtra" style="color: var(--accent-straord);">€ 0,00</div>
+        </div>
+        <div class="card">
+            <h3>Totale Compensi Straord.</h3>
+            <div class="value" id="totalPay">€ 0,00</div>
+            <div class="sub-value">(Prog + Extra)</div>
         </div>
     </div>
 
@@ -220,7 +243,10 @@
 </div>
 
 <script>
-    // Inizializza mese corrente
+    // Tariffe Orarie
+    const RATE_FERIALE = 7.98;
+    const RATE_FESTIVO = 9.03; // Domenica
+
     const today = new Date();
     const monthPicker = document.getElementById('monthSelect');
     monthPicker.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
@@ -240,44 +266,76 @@
         let sumProgMinutes = 0;
         let sumExtraMinutes = 0;
 
+        let payProgTotal = 0;
+        let payExtraTotal = 0;
+
+        let countCO = 0;
+        let countCS = 0;
+
         for (let day = 1; day <= daysInMonth; day++) {
             const currentDate = new Date(year, month - 1, day);
             const dayOfWeek = currentDate.getDay(); // 0 = Dom, 1 = Lun, ..., 6 = Sab
             const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             
             const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const isSunday = (dayOfWeek === 0);
             const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+            const rate = isSunday ? RATE_FESTIVO : RATE_FERIALE;
 
             // Carica dati salvati o imposta defaults
             const savedData = JSON.parse(localStorage.getItem(getStorageKey(dateStr))) || getDefaults(dayOfWeek, year, month, day);
 
-            // Calcolo ore
-            if (savedData.baseActive) {
+            // Conteggio assenze
+            if (savedData.absence === 'CO') countCO++;
+            if (savedData.absence === 'CS') countCS++;
+
+            // Se c'è assenza, l'ordinario viene azzerato
+            const hasAbsence = (savedData.absence && savedData.absence !== 'PRESENT');
+            const isOrdActive = savedData.baseActive && !hasAbsence;
+
+            // Calcolo ore e importi
+            if (isOrdActive) {
                 sumOrdMinutes += calculateMinutes(savedData.baseStart, savedData.baseEnd);
             }
 
             if (savedData.progActive) {
-                sumProgMinutes += calculateMinutes(savedData.progStart, savedData.progEnd);
+                const progMins = calculateMinutes(savedData.progStart, savedData.progEnd);
+                sumProgMinutes += progMins;
+                payProgTotal += (progMins / 60) * rate;
             }
 
             if (savedData.extraActive) {
-                sumExtraMinutes += calculateMinutes(savedData.extraStart, savedData.extraEnd);
+                const extraMins = calculateMinutes(savedData.extraStart, savedData.extraEnd);
+                sumExtraMinutes += extraMins;
+                payExtraTotal += (extraMins / 60) * rate;
             }
 
             // Generazione elemento HTML per il giorno
             const row = document.createElement('div');
-            row.className = `day-row ${isWeekend ? 'weekend' : ''}`;
+            row.className = `day-row ${isWeekend ? 'weekend' : ''} ${hasAbsence ? 'absence-active' : ''}`;
             
             row.innerHTML = `
                 <div class="day-info">
                     ${day} ${dayNames[dayOfWeek].substring(0, 3)}
                     <span>${dateStr}</span>
                 </div>
+
+                <!-- Selezione Assenza / Stato -->
+                <div>
+                    <select class="absence-select" onchange="updateShift('${dateStr}', 'absence', this.value)">
+                        <option value="PRESENT" ${savedData.absence === 'PRESENT' ? 'selected' : ''}>Presenza</option>
+                        <option value="CO" ${savedData.absence === 'CO' ? 'selected' : ''}>CO (Ferie)</option>
+                        <option value="CS" ${savedData.absence === 'CS' ? 'selected' : ''}>CS (Malattia)</option>
+                        <option value="RIPOSO" ${savedData.absence === 'RIPOSO' ? 'selected' : ''}>Riposo Comp.</option>
+                        <option value="ALTRO" ${savedData.absence === 'ALTRO' ? 'selected' : ''}>Assente</option>
+                    </select>
+                </div>
                 
                 <div class="shift-group">
                     <!-- Turno Base / Ordinario -->
-                    <div class="shift-block ${savedData.baseActive ? 'active-ord' : ''}">
-                        <input type="checkbox" id="base_${dateStr}" ${savedData.baseActive ? 'checked' : ''} 
+                    <div class="shift-block ${isOrdActive ? 'active-ord' : ''}">
+                        <input type="checkbox" id="base_${dateStr}" ${isOrdActive ? 'checked' : ''} 
+                            ${hasAbsence ? 'disabled' : ''}
                             onchange="updateShift('${dateStr}', 'baseActive', this.checked)">
                         <label for="base_${dateStr}"><strong>Ord.</strong></label>
                         <input type="time" value="${savedData.baseStart}" 
@@ -299,7 +357,7 @@
                             onchange="updateShift('${dateStr}', 'progEnd', this.value)">
                     </div>
 
-                    <!-- Straordinario Ordinario -->
+                    <!-- Straordinario Ordinario/Extra -->
                     <div class="shift-block ${savedData.extraActive ? 'active-straord' : ''}">
                         <input type="checkbox" id="extra_${dateStr}" ${savedData.extraActive ? 'checked' : ''} 
                             onchange="updateShift('${dateStr}', 'extraActive', this.checked)">
@@ -316,10 +374,18 @@
             daysContainer.appendChild(row);
         }
 
-        // Aggiorna Dashboard dei Totali
+        // Aggiorna Dashboard dei Totali Ore
         document.getElementById('totalOrd').innerText = formatHours(sumOrdMinutes);
         document.getElementById('totalProg').innerText = formatHours(sumProgMinutes);
         document.getElementById('totalExtra').innerText = formatHours(sumExtraMinutes);
+
+        // Aggiorna Dashboard Economica
+        document.getElementById('payProg').innerText = `€ ${payProgTotal.toFixed(2)} (Mese succ.)`;
+        document.getElementById('payExtra').innerText = `€ ${payExtraTotal.toFixed(2)}`;
+        document.getElementById('totalPay').innerText = `€ ${(payProgTotal + payExtraTotal).toFixed(2)}`;
+
+        // Riquadro Assenze
+        document.getElementById('countAbsence').innerText = `CO: ${countCO} gg | CS: ${countCS} gg`;
     }
 
     // Default per giorno della settimana
@@ -329,6 +395,7 @@
         // Se siamo a Settembre 2026 prima del 17, imposta tutto disattivato
         if (year === 2026 && month === 9 && day < 17) {
             return {
+                absence: 'PRESENT',
                 baseActive: false,
                 baseStart: '08:00',
                 baseEnd: '14:00',
@@ -341,10 +408,11 @@
             };
         }
         
-        // Martedì (2) e Giovedì (4) attivo Programmato
+        // Martedì (2) e Giovedì (4) attivo Programmato di default
         const isProgDay = (dayOfWeek === 2 || dayOfWeek === 4);
 
         return {
+            absence: 'PRESENT',
             baseActive: !isWeekend,
             baseStart: '08:00',
             baseEnd: '14:00',
@@ -353,7 +421,7 @@
             progStart: '15:00',
             progEnd: '18:00',
             
-            extraActive: false, // Sempre deselezionato di default per conferma manuale
+            extraActive: false,
             extraStart: '14:30',
             extraEnd: '17:00'
         };
