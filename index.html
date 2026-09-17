@@ -20,7 +20,7 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 15px;
+            padding: 12px;
         }
 
         .container {
@@ -32,15 +32,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+            margin-bottom: 12px;
             gap: 10px;
         }
 
         h1 {
             color: var(--primary);
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
         }
 
         /* Toggle Switch Vista */
@@ -48,14 +47,11 @@
             background-color: var(--primary);
             color: white;
             border: none;
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
@@ -65,49 +61,53 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: var(--card-bg);
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .month-picker input {
-            padding: 8px 12px;
+            padding: 6px 10px;
             font-size: 1rem;
             border: 1px solid #ccc;
             border-radius: 6px;
         }
 
-        /* Summary Dashboard */
+        /* Summary Dashboard - 4 Quadranti */
         .summary-cards {
             display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        body.view-desktop .summary-cards {
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 14px;
+            padding: 10px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             text-align: center;
-            border-top: 4px solid var(--primary);
+            border-top: 3px solid var(--primary);
         }
 
         .card.prog { border-top-color: var(--accent-prog); }
         .card.straord { border-top-color: var(--accent-straord); }
 
         .card h3 {
-            margin: 0 0 6px 0;
-            font-size: 0.8rem;
+            margin: 0 0 4px 0;
+            font-size: 0.75rem;
             color: #666;
             text-transform: uppercase;
         }
 
         .card .value {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: var(--primary);
         }
@@ -116,75 +116,166 @@
         .card.straord .value { color: var(--accent-straord); }
 
         .card .sub-value {
-            font-size: 0.85rem;
-            margin-top: 4px;
+            font-size: 0.75rem;
+            margin-top: 2px;
             font-weight: 600;
             color: #555;
         }
 
-        /* Days List */
-        .days-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        /* --- STILI VISTA MOBILE (iPhone - Calendario + Dettaglio) --- */
+        #mobileCalendarView {
+            display: none;
         }
 
-        .day-row {
+        body.view-mobile #mobileCalendarView {
+            display: block;
+        }
+
+        body.view-mobile #daysContainerDesktop {
+            display: none;
+        }
+
+        /* Griglia Giorni Settimana */
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .cal-day-cell {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 8px 2px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            cursor: pointer;
+            border: 2px solid transparent;
+            min-height: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cal-day-cell.weekend {
+            background-color: #fff3e0;
+        }
+
+        .cal-day-cell.selected {
+            border-color: var(--primary);
+            background-color: #e8f4fc;
+        }
+
+        .cal-day-cell.absence {
+            background-color: #fce4ec;
+        }
+
+        .cal-day-num {
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .cal-day-badges {
+            display: flex;
+            gap: 2px;
+            margin-top: 3px;
+        }
+
+        .dot-badge {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .dot-ord { background-color: var(--secondary); }
+        .dot-prog { background-color: var(--accent-prog); }
+        .dot-extra { background-color: var(--accent-straord); }
+
+        /* Pannello Dettaglio Giorno Selezionato */
+        .day-detail-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .day-detail-header {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-shift-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mobile-shift-block {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .mobile-shift-block.active-ord { background: #ebf5fb; border-color: var(--secondary); }
+        .mobile-shift-block.active-prog { background: #fef5ec; border-color: var(--accent-prog); }
+        .mobile-shift-block.active-straord { background: #eafaf1; border-color: var(--accent-straord); }
+
+        /* --- STILI VISTA DESKTOP / IPAD --- */
+        body.view-desktop #mobileCalendarView {
+            display: none;
+        }
+
+        body.view-desktop #daysContainerDesktop {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .day-row-desktop {
             background: var(--card-bg);
             padding: 12px 15px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            border-left: 5px solid transparent;
-        }
-
-        .day-row.weekend {
-            background-color: #fff3e0;
-            border-left-color: #f39c12;
-        }
-
-        .day-row.absence-active {
-            background-color: #fce4ec;
-            border-left-color: #e91e63;
-        }
-
-        .day-info {
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .day-info span {
-            font-weight: normal;
-            font-size: 0.85rem;
-            color: #666;
-            margin-left: 5px;
-        }
-
-        /* STILI VISTA TABLET/DESKTOP (Default iPad) */
-        body.view-desktop .day-row {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
+            border-left: 5px solid transparent;
         }
 
-        body.view-desktop .day-info {
-            width: 130px;
-        }
+        .day-row-desktop.weekend { background-color: #fff3e0; border-left-color: #f39c12; }
+        .day-row-desktop.absence-active { background-color: #fce4ec; border-left-color: #e91e63; }
 
-        body.view-desktop .day-info span {
-            display: block;
-            margin-left: 0;
-        }
-
-        body.view-desktop .shift-group {
+        .shift-group-desktop {
             display: flex;
             align-items: center;
             gap: 10px;
-            flex-wrap: wrap;
         }
 
-        body.view-desktop .shift-block {
+        .shift-block-desktop {
             display: flex;
             align-items: center;
             gap: 5px;
@@ -195,92 +286,37 @@
             border: 1px solid #e9ecef;
         }
 
-        /* STILI VISTA MOBILE (iPhone) */
-        body.view-mobile .day-row {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        body.view-mobile .day-header-mobile {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
-        }
-
-        body.view-mobile .shift-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-        }
-
-        body.view-mobile .shift-block {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.95rem;
-            background: #f8f9fa;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-        }
-
-        body.view-mobile input[type="time"] {
-            font-size: 1rem;
-            padding: 4px 6px;
-        }
-
-        body.view-mobile select.absence-select {
-            width: 100%;
-            padding: 8px;
-            font-size: 0.95rem;
-        }
-
-        /* Colori Turni Attivi */
-        .shift-block.active-ord {
-            background: #ebf5fb !important;
-            border-color: var(--secondary) !important;
-        }
-
-        .shift-block.active-prog {
-            background: #fef5ec !important;
-            border-color: var(--accent-prog) !important;
-        }
-
-        .shift-block.active-straord {
-            background: #eafaf1 !important;
-            border-color: var(--accent-straord) !important;
-        }
+        .shift-block-desktop.active-ord { background: #ebf5fb; border-color: var(--secondary); }
+        .shift-block-desktop.active-prog { background: #fef5ec; border-color: var(--accent-prog); }
+        .shift-block-desktop.active-straord { background: #eafaf1; border-color: var(--accent-straord); }
 
         select.absence-select {
-            padding: 5px 8px;
+            padding: 6px 8px;
             border-radius: 6px;
             border: 1px solid #ccc;
             font-weight: bold;
             background-color: #fff;
         }
 
+        input[type="time"] {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+
         input[type="checkbox"] {
             width: 18px;
             height: 18px;
         }
-
-        label {
-            cursor: pointer;
-            user-select: none;
-        }
     </style>
 </head>
-<body class="view-desktop">
+<body class="view-mobile">
 
 <div class="container">
     <div class="header-bar">
         <h1>Agenda Lavorativa</h1>
         <button class="view-toggle-btn" onclick="toggleView()" id="toggleBtn">
-            📱 Passa a Vista Mobile
+            💻 Vista iPad
         </button>
     </div>
 
@@ -290,7 +326,7 @@
         <input type="month" id="monthSelect" onchange="renderCalendar()">
     </div>
 
-    <!-- Dashboard Riepilogo Ore e Compensi -->
+    <!-- Dashboard Riepilogo Ore (4 Quadranti) -->
     <div class="summary-cards">
         <div class="card">
             <h3>Ore Ordinarie</h3>
@@ -298,12 +334,12 @@
             <div class="sub-value" id="countAbsence">Assenze: 0</div>
         </div>
         <div class="card prog">
-            <h3>Straordinario Prog.</h3>
+            <h3>Prog. (Mese succ.)</h3>
             <div class="value" id="totalProg">0h</div>
-            <div class="sub-value" id="payProg" style="color: var(--accent-prog);">€ 0,00 (Mese succ.)</div>
+            <div class="sub-value" id="payProg" style="color: var(--accent-prog);">€ 0,00</div>
         </div>
         <div class="card straord">
-            <h3>Straordinario Extra</h3>
+            <h3>Extra</h3>
             <div class="value" id="totalExtra">0h</div>
             <div class="sub-value" id="payExtra" style="color: var(--accent-straord);">€ 0,00</div>
         </div>
@@ -314,8 +350,21 @@
         </div>
     </div>
 
-    <!-- Lista Giorni -->
-    <div class="days-list" id="daysContainer"></div>
+    <!-- VISTA MOBILE (Calendario + Dettaglio) -->
+    <div id="mobileCalendarView">
+        <div class="calendar-weekdays">
+            <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+
+        <!-- Scheda Dettaglio Giorno Selezionato -->
+        <div class="day-detail-card" id="dayDetailCard">
+            <!-- Popolato via JS -->
+        </div>
+    </div>
+
+    <!-- VISTA DESKTOP / IPAD (Elenco Completo) -->
+    <div id="daysContainerDesktop"></div>
 </div>
 
 <script>
@@ -326,7 +375,7 @@
     const monthPicker = document.getElementById('monthSelect');
     monthPicker.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
-    // Rilevamento iniziale dispositivo o preferenza salvata
+    let selectedDayMobile = today.getDate(); // Giorno selezionato nel calendario mobile
     let currentView = localStorage.getItem('agenda_view_preference') || (window.innerWidth < 768 ? 'mobile' : 'desktop');
     applyViewClass();
 
@@ -341,10 +390,10 @@
         const btn = document.getElementById('toggleBtn');
         if (currentView === 'mobile') {
             document.body.className = 'view-mobile';
-            btn.innerHTML = '💻 Passa a Vista iPad';
+            btn.innerHTML = '💻 Vista iPad';
         } else {
             document.body.className = 'view-desktop';
-            btn.innerHTML = '📱 Passa a Vista Mobile';
+            btn.innerHTML = '📱 Vista iPhone';
         }
     }
 
@@ -354,27 +403,42 @@
 
     function renderCalendar() {
         const [year, month] = monthPicker.value.split('-').map(Number);
-        const daysContainer = document.getElementById('daysContainer');
-        daysContainer.innerHTML = '';
-
         const daysInMonth = new Date(year, month, 0).getDate();
+
+        // Se il giorno selezionato supera i giorni del mese, resetta al 1°
+        if (selectedDayMobile > daysInMonth) selectedDayMobile = 1;
 
         let sumOrdMinutes = 0;
         let sumProgMinutes = 0;
         let sumExtraMinutes = 0;
-
         let payProgTotal = 0;
         let payExtraTotal = 0;
-
         let countCO = 0;
         let countCS = 0;
+
+        const calGrid = document.getElementById('calendarGrid');
+        const daysDesktop = document.getElementById('daysContainerDesktop');
+        
+        calGrid.innerHTML = '';
+        daysDesktop.innerHTML = '';
+
+        // Calcola primo giorno della settimana (1 = Lun, ..., 0 = Dom)
+        let firstDayIndex = new Date(year, month - 1, 1).getDay();
+        firstDayIndex = (firstDayIndex === 0) ? 6 : firstDayIndex - 1; // Riordina con Lunedì = 0
+
+        // Caselle vuote prima del primo giorno del mese
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyCell = document.createElement('div');
+            calGrid.appendChild(emptyCell);
+        }
+
+        const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
 
         for (let day = 1; day <= daysInMonth; day++) {
             const currentDate = new Date(year, month - 1, day);
             const dayOfWeek = currentDate.getDay();
             const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             
-            const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
             const isSunday = (dayOfWeek === 0);
             const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
             const rate = isSunday ? RATE_FESTIVO : RATE_FERIALE;
@@ -403,129 +467,151 @@
                 payExtraTotal += (extraMins / 60) * rate;
             }
 
-            const row = document.createElement('div');
-            row.className = `day-row ${isWeekend ? 'weekend' : ''} ${hasAbsence ? 'absence-active' : ''}`;
-            
-            const isMobile = (currentView === 'mobile');
+            // --- VISTA MOBILE: Genera casella del Calendario ---
+            const calCell = document.createElement('div');
+            calCell.className = `cal-day-cell ${isWeekend ? 'weekend' : ''} ${hasAbsence ? 'absence' : ''} ${day === selectedDayMobile ? 'selected' : ''}`;
+            calCell.onclick = () => {
+                selectedDayMobile = day;
+                renderCalendar();
+            };
 
-            if (isMobile) {
-                // Layout specifico Mobile
-                row.innerHTML = `
-                    <div class="day-header-mobile">
-                        <div class="day-info">
-                            ${day} ${dayNames[dayOfWeek]} <span>(${dateStr})</span>
-                        </div>
+            let badgesHtml = '<div class="cal-day-badges">';
+            if (isOrdActive) badgesHtml += '<div class="dot-badge dot-ord"></div>';
+            if (savedData.progActive) badgesHtml += '<div class="dot-badge dot-prog"></div>';
+            if (savedData.extraActive) badgesHtml += '<div class="dot-badge dot-extra"></div>';
+            badgesHtml += '</div>';
+
+            calCell.innerHTML = `
+                <div class="cal-day-num">${day}</div>
+                ${hasAbsence ? `<span style="font-size:0.65rem; font-weight:bold; color:#e91e63;">${savedData.absence}</span>` : badgesHtml}
+            `;
+            calGrid.appendChild(calCell);
+
+            // --- VISTA DESKTOP: Genera riga elenco ---
+            const desktopRow = document.createElement('div');
+            desktopRow.className = `day-row-desktop ${isWeekend ? 'weekend' : ''} ${hasAbsence ? 'absence-active' : ''}`;
+            desktopRow.innerHTML = `
+                <div style="font-weight:bold; width:130px;">
+                    ${day} ${dayNames[dayOfWeek].substring(0, 3)}
+                    <span style="display:block; font-size:0.8rem; font-weight:normal; color:#666;">${dateStr}</span>
+                </div>
+                <div>
+                    <select class="absence-select" onchange="updateShift('${dateStr}', 'absence', this.value)">
+                        <option value="PRESENT" ${savedData.absence === 'PRESENT' ? 'selected' : ''}>Presenza</option>
+                        <option value="CO" ${savedData.absence === 'CO' ? 'selected' : ''}>CO (Ferie)</option>
+                        <option value="CS" ${savedData.absence === 'CS' ? 'selected' : ''}>CS (Malattia)</option>
+                        <option value="RIPOSO" ${savedData.absence === 'RIPOSO' ? 'selected' : ''}>Riposo Comp.</option>
+                        <option value="ALTRO" ${savedData.absence === 'ALTRO' ? 'selected' : ''}>Assente</option>
+                    </select>
+                </div>
+                <div class="shift-group-desktop">
+                    <div class="shift-block-desktop ${isOrdActive ? 'active-ord' : ''}">
+                        <input type="checkbox" id="d_base_${dateStr}" ${isOrdActive ? 'checked' : ''} ${hasAbsence ? 'disabled' : ''} onchange="updateShift('${dateStr}', 'baseActive', this.checked)">
+                        <label for="d_base_${dateStr}"><strong>Ord.</strong></label>
+                        <input type="time" value="${savedData.baseStart}" onchange="updateShift('${dateStr}', 'baseStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.baseEnd}" onchange="updateShift('${dateStr}', 'baseEnd', this.value)">
                     </div>
-
-                    <div>
-                        <select class="absence-select" onchange="updateShift('${dateStr}', 'absence', this.value)">
-                            <option value="PRESENT" ${savedData.absence === 'PRESENT' ? 'selected' : ''}>Presenza (Normale)</option>
-                            <option value="CO" ${savedData.absence === 'CO' ? 'selected' : ''}>CO (Ferie)</option>
-                            <option value="CS" ${savedData.absence === 'CS' ? 'selected' : ''}>CS (Malattia)</option>
-                            <option value="RIPOSO" ${savedData.absence === 'RIPOSO' ? 'selected' : ''}>Riposo Comp.</option>
-                            <option value="ALTRO" ${savedData.absence === 'ALTRO' ? 'selected' : ''}>Assente</option>
-                        </select>
+                    <div class="shift-block-desktop ${savedData.progActive ? 'active-prog' : ''}">
+                        <input type="checkbox" id="d_prog_${dateStr}" ${savedData.progActive ? 'checked' : ''} onchange="updateShift('${dateStr}', 'progActive', this.checked)">
+                        <label for="d_prog_${dateStr}"><strong>Prog.</strong></label>
+                        <input type="time" value="${savedData.progStart}" onchange="updateShift('${dateStr}', 'progStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.progEnd}" onchange="updateShift('${dateStr}', 'progEnd', this.value)">
                     </div>
-
-                    <div class="shift-group">
-                        <!-- Turno Base -->
-                        <div class="shift-block ${isOrdActive ? 'active-ord' : ''}">
-                            <div>
-                                <input type="checkbox" id="base_${dateStr}" ${isOrdActive ? 'checked' : ''} ${hasAbsence ? 'disabled' : ''} onchange="updateShift('${dateStr}', 'baseActive', this.checked)">
-                                <label for="base_${dateStr}"><strong>Ordinario</strong></label>
-                            </div>
-                            <div>
-                                <input type="time" value="${savedData.baseStart}" onchange="updateShift('${dateStr}', 'baseStart', this.value)">
-                                -
-                                <input type="time" value="${savedData.baseEnd}" onchange="updateShift('${dateStr}', 'baseEnd', this.value)">
-                            </div>
-                        </div>
-
-                        <!-- Straordinario Programmato -->
-                        <div class="shift-block ${savedData.progActive ? 'active-prog' : ''}">
-                            <div>
-                                <input type="checkbox" id="prog_${dateStr}" ${savedData.progActive ? 'checked' : ''} onchange="updateShift('${dateStr}', 'progActive', this.checked)">
-                                <label for="prog_${dateStr}"><strong>Programmato</strong></label>
-                            </div>
-                            <div>
-                                <input type="time" value="${savedData.progStart}" onchange="updateShift('${dateStr}', 'progStart', this.value)">
-                                -
-                                <input type="time" value="${savedData.progEnd}" onchange="updateShift('${dateStr}', 'progEnd', this.value)">
-                            </div>
-                        </div>
-
-                        <!-- Straordinario Extra -->
-                        <div class="shift-block ${savedData.extraActive ? 'active-straord' : ''}">
-                            <div>
-                                <input type="checkbox" id="extra_${dateStr}" ${savedData.extraActive ? 'checked' : ''} onchange="updateShift('${dateStr}', 'extraActive', this.checked)">
-                                <label for="extra_${dateStr}"><strong>Extra</strong></label>
-                            </div>
-                            <div>
-                                <input type="time" value="${savedData.extraStart}" onchange="updateShift('${dateStr}', 'extraStart', this.value)">
-                                -
-                                <input type="time" value="${savedData.extraEnd}" onchange="updateShift('${dateStr}', 'extraEnd', this.value)">
-                            </div>
-                        </div>
+                    <div class="shift-block-desktop ${savedData.extraActive ? 'active-straord' : ''}">
+                        <input type="checkbox" id="d_extra_${dateStr}" ${savedData.extraActive ? 'checked' : ''} onchange="updateShift('${dateStr}', 'extraActive', this.checked)">
+                        <label for="d_extra_${dateStr}"><strong>Extra</strong></label>
+                        <input type="time" value="${savedData.extraStart}" onchange="updateShift('${dateStr}', 'extraStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.extraEnd}" onchange="updateShift('${dateStr}', 'extraEnd', this.value)">
                     </div>
-                `;
-            } else {
-                // Layout Desktop / iPad
-                row.innerHTML = `
-                    <div class="day-info">
-                        ${day} ${dayNames[dayOfWeek].substring(0, 3)}
-                        <span>${dateStr}</span>
-                    </div>
-
-                    <div>
-                        <select class="absence-select" onchange="updateShift('${dateStr}', 'absence', this.value)">
-                            <option value="PRESENT" ${savedData.absence === 'PRESENT' ? 'selected' : ''}>Presenza</option>
-                            <option value="CO" ${savedData.absence === 'CO' ? 'selected' : ''}>CO (Ferie)</option>
-                            <option value="CS" ${savedData.absence === 'CS' ? 'selected' : ''}>CS (Malattia)</option>
-                            <option value="RIPOSO" ${savedData.absence === 'RIPOSO' ? 'selected' : ''}>Riposo Comp.</option>
-                            <option value="ALTRO" ${savedData.absence === 'ALTRO' ? 'selected' : ''}>Assente</option>
-                        </select>
-                    </div>
-                    
-                    <div class="shift-group">
-                        <div class="shift-block ${isOrdActive ? 'active-ord' : ''}">
-                            <input type="checkbox" id="base_${dateStr}" ${isOrdActive ? 'checked' : ''} ${hasAbsence ? 'disabled' : ''} onchange="updateShift('${dateStr}', 'baseActive', this.checked)">
-                            <label for="base_${dateStr}"><strong>Ord.</strong></label>
-                            <input type="time" value="${savedData.baseStart}" onchange="updateShift('${dateStr}', 'baseStart', this.value)">
-                            -
-                            <input type="time" value="${savedData.baseEnd}" onchange="updateShift('${dateStr}', 'baseEnd', this.value)">
-                        </div>
-
-                        <div class="shift-block ${savedData.progActive ? 'active-prog' : ''}">
-                            <input type="checkbox" id="prog_${dateStr}" ${savedData.progActive ? 'checked' : ''} onchange="updateShift('${dateStr}', 'progActive', this.checked)">
-                            <label for="prog_${dateStr}"><strong>Prog.</strong></label>
-                            <input type="time" value="${savedData.progStart}" onchange="updateShift('${dateStr}', 'progStart', this.value)">
-                            -
-                            <input type="time" value="${savedData.progEnd}" onchange="updateShift('${dateStr}', 'progEnd', this.value)">
-                        </div>
-
-                        <div class="shift-block ${savedData.extraActive ? 'active-straord' : ''}">
-                            <input type="checkbox" id="extra_${dateStr}" ${savedData.extraActive ? 'checked' : ''} onchange="updateShift('${dateStr}', 'extraActive', this.checked)">
-                            <label for="extra_${dateStr}"><strong>Extra</strong></label>
-                            <input type="time" value="${savedData.extraStart}" onchange="updateShift('${dateStr}', 'extraStart', this.value)">
-                            -
-                            <input type="time" value="${savedData.extraEnd}" onchange="updateShift('${dateStr}', 'extraEnd', this.value)">
-                        </div>
-                    </div>
-                `;
-            }
-
-            daysContainer.appendChild(row);
+                </div>
+            `;
+            daysDesktop.appendChild(desktopRow);
         }
 
+        // Renderizza il pannello Dettaglio per la vista Mobile
+        renderDayDetailMobile(year, month, selectedDayMobile, dayNames);
+
+        // Aggiorna Totali
         document.getElementById('totalOrd').innerText = formatHours(sumOrdMinutes);
         document.getElementById('totalProg').innerText = formatHours(sumProgMinutes);
         document.getElementById('totalExtra').innerText = formatHours(sumExtraMinutes);
 
-        document.getElementById('payProg').innerText = `€ ${payProgTotal.toFixed(2)} (Mese succ.)`;
+        document.getElementById('payProg').innerText = `€ ${payProgTotal.toFixed(2)}`;
         document.getElementById('payExtra').innerText = `€ ${payExtraTotal.toFixed(2)}`;
         document.getElementById('totalPay').innerText = `€ ${(payProgTotal + payExtraTotal).toFixed(2)}`;
 
-        document.getElementById('countAbsence').innerText = `CO: ${countCO} gg | CS: ${countCS} gg`;
+        document.getElementById('countAbsence').innerText = `CO: ${countCO} | CS: ${countCS}`;
+    }
+
+    function renderDayDetailMobile(year, month, day, dayNames) {
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayOfWeek = new Date(year, month - 1, day).getDay();
+        const savedData = JSON.parse(localStorage.getItem(getStorageKey(dateStr))) || getDefaults(dayOfWeek, year, month, day);
+
+        const hasAbsence = (savedData.absence && savedData.absence !== 'PRESENT');
+        const isOrdActive = savedData.baseActive && !hasAbsence;
+
+        const card = document.getElementById('dayDetailCard');
+        card.innerHTML = `
+            <div class="day-detail-header">
+                <div>${day} ${dayNames[dayOfWeek]} <span style="font-size:0.85rem; font-weight:normal; color:#666;">(${dateStr})</span></div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label style="font-size:0.85rem; font-weight:bold; display:block; margin-bottom:4px;">Stato / Assenza:</label>
+                <select class="absence-select" style="width:100%;" onchange="updateShift('${dateStr}', 'absence', this.value)">
+                    <option value="PRESENT" ${savedData.absence === 'PRESENT' ? 'selected' : ''}>Presenza (Normale)</option>
+                    <option value="CO" ${savedData.absence === 'CO' ? 'selected' : ''}>CO (Ferie)</option>
+                    <option value="CS" ${savedData.absence === 'CS' ? 'selected' : ''}>CS (Malattia)</option>
+                    <option value="RIPOSO" ${savedData.absence === 'RIPOSO' ? 'selected' : ''}>Riposo Comp.</option>
+                    <option value="ALTRO" ${savedData.absence === 'ALTRO' ? 'selected' : ''}>Assente</option>
+                </select>
+            </div>
+
+            <div class="mobile-shift-group">
+                <!-- Turno Base -->
+                <div class="mobile-shift-block ${isOrdActive ? 'active-ord' : ''}">
+                    <div>
+                        <input type="checkbox" id="m_base_${dateStr}" ${isOrdActive ? 'checked' : ''} ${hasAbsence ? 'disabled' : ''} onchange="updateShift('${dateStr}', 'baseActive', this.checked)">
+                        <label for="m_base_${dateStr}"><strong>Ordinario</strong></label>
+                    </div>
+                    <div>
+                        <input type="time" value="${savedData.baseStart}" onchange="updateShift('${dateStr}', 'baseStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.baseEnd}" onchange="updateShift('${dateStr}', 'baseEnd', this.value)">
+                    </div>
+                </div>
+
+                <!-- Straordinario Programmato -->
+                <div class="mobile-shift-block ${savedData.progActive ? 'active-prog' : ''}">
+                    <div>
+                        <input type="checkbox" id="m_prog_${dateStr}" ${savedData.progActive ? 'checked' : ''} onchange="updateShift('${dateStr}', 'progActive', this.checked)">
+                        <label for="m_prog_${dateStr}"><strong>Programmato</strong></label>
+                    </div>
+                    <div>
+                        <input type="time" value="${savedData.progStart}" onchange="updateShift('${dateStr}', 'progStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.progEnd}" onchange="updateShift('${dateStr}', 'progEnd', this.value)">
+                    </div>
+                </div>
+
+                <!-- Straordinario Extra -->
+                <div class="mobile-shift-block ${savedData.extraActive ? 'active-straord' : ''}">
+                    <div>
+                        <input type="checkbox" id="m_extra_${dateStr}" ${savedData.extraActive ? 'checked' : ''} onchange="updateShift('${dateStr}', 'extraActive', this.checked)">
+                        <label for="m_extra_${dateStr}"><strong>Extra</strong></label>
+                    </div>
+                    <div>
+                        <input type="time" value="${savedData.extraStart}" onchange="updateShift('${dateStr}', 'extraStart', this.value)">
+                        -
+                        <input type="time" value="${savedData.extraEnd}" onchange="updateShift('${dateStr}', 'extraEnd', this.value)">
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     function getDefaults(dayOfWeek, year, month, day) {
