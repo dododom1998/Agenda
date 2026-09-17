@@ -343,9 +343,6 @@
         
         // Martedì (2) e Giovedì (4) attivo Programmato
         const isProgDay = (dayOfWeek === 2 || dayOfWeek === 4);
-        
-        // Lunedì (1), Mercoledì (3), Venerdì (5) attivo Extra
-        const isExtraDay = (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5);
 
         return {
             baseActive: !isWeekend,
@@ -356,7 +353,7 @@
             progStart: '15:00',
             progEnd: '18:00',
             
-            extraActive: isExtraDay,
+            extraActive: false, // Sempre deselezionato di default per conferma manuale
             extraStart: '14:30',
             extraEnd: '17:00'
         };
