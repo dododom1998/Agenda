@@ -82,7 +82,7 @@
             border-radius: 4px;
         }
 
-        /* 4 Quadranti Ingranditi */
+        /* 4 Quadranti */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -96,7 +96,7 @@
 
         .card {
             background: var(--card-bg);
-            padding: 10px 6px; /* Spazio interno aumentato */
+            padding: 10px 6px;
             border-radius: 10px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.06);
             text-align: center;
@@ -115,7 +115,7 @@
         }
 
         .card .value {
-            font-size: 1.35rem; /* Font numeri ingrandito */
+            font-size: 1.35rem;
             font-weight: bold;
             color: var(--primary);
             line-height: 1.1;
@@ -131,11 +131,10 @@
             color: #555;
         }
 
-        /* Calendario Griglia Compatto (Altezza Ridotta) */
+        /* Calendario Griglia Ultra-Compatto (Altezza Fissa) */
         #mobileCalendarView {
             display: none;
             flex-direction: column;
-            flex-grow: 1;
         }
 
         body.view-mobile #mobileCalendarView {
@@ -160,13 +159,13 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 3px;
-            flex-grow: 1;
         }
 
         .cal-day-cell {
             background: var(--card-bg);
-            border-radius: 5px;
-            padding: 2px 1px; /* Padding minimo per ridurre altezza */
+            border-radius: 4px;
+            height: 32px; /* Altezza ridotta e fissa */
+            padding: 0;
             text-align: center;
             box-shadow: 0 1px 2px rgba(0,0,0,0.04);
             cursor: pointer;
@@ -174,8 +173,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Centratura verticale */
+            justify-content: center;
             gap: 1px;
+            box-sizing: border-box;
         }
 
         .cal-day-cell.weekend { background-color: #fff3e0; }
@@ -183,7 +183,7 @@
 
         .cal-day-num {
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             line-height: 1;
         }
 
@@ -354,7 +354,7 @@
         <input type="month" id="monthSelect" onchange="renderCalendar()">
     </div>
 
-    <!-- 4 Quadranti Ingranditi -->
+    <!-- 4 Quadranti -->
     <div class="summary-cards">
         <div class="card">
             <h3>Ore Ordinarie</h3>
@@ -378,7 +378,7 @@
         </div>
     </div>
 
-    <!-- VISTA MOBILE (Griglia Calendario Compatta) -->
+    <!-- VISTA MOBILE (Griglia Calendario Fissa e Ridotta) -->
     <div id="mobileCalendarView">
         <div class="calendar-weekdays">
             <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
@@ -501,7 +501,7 @@
 
             calCell.innerHTML = `
                 <div class="cal-day-num">${day}</div>
-                ${hasAbsence ? `<span style="font-size:0.55rem; font-weight:bold; color:#e91e63; line-height:1;">${savedData.absence}</span>` : badgesHtml}
+                ${hasAbsence ? `<span style="font-size:0.5rem; font-weight:bold; color:#e91e63; line-height:1;">${savedData.absence}</span>` : badgesHtml}
             `;
             calGrid.appendChild(calCell);
 
