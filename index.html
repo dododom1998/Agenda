@@ -82,11 +82,11 @@
             border-radius: 4px;
         }
 
-        /* 4 Quadranti */
+        /* 4 Quadranti Riepilogo */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 8px;
         }
 
@@ -96,7 +96,7 @@
 
         .card {
             background: var(--card-bg);
-            padding: 10px 6px;
+            padding: 8px 6px;
             border-radius: 10px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.06);
             text-align: center;
@@ -107,15 +107,15 @@
         .card.straord { border-top-color: var(--accent-straord); }
 
         .card h3 {
-            margin: 0 0 3px 0;
-            font-size: 0.7rem;
+            margin: 0 0 2px 0;
+            font-size: 0.68rem;
             color: #666;
             text-transform: uppercase;
             font-weight: 700;
         }
 
         .card .value {
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: bold;
             color: var(--primary);
             line-height: 1.1;
@@ -125,13 +125,13 @@
         .card.straord .value { color: var(--accent-straord); }
 
         .card .sub-value {
-            font-size: 0.7rem;
-            margin-top: 3px;
+            font-size: 0.68rem;
+            margin-top: 2px;
             font-weight: 600;
             color: #555;
         }
 
-        /* Calendario Griglia Ultra-Compatto (Altezza Fissa) */
+        /* Calendario Griglia Bilanciato */
         #mobileCalendarView {
             display: none;
             flex-direction: column;
@@ -150,9 +150,9 @@
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             font-weight: bold;
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             color: #666;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         .calendar-grid {
@@ -163,18 +163,18 @@
 
         .cal-day-cell {
             background: var(--card-bg);
-            border-radius: 4px;
-            height: 32px; /* Altezza ridotta e fissa */
+            border-radius: 6px;
+            height: 40px; /* Altezza media ottimizzata per il tocco */
             padding: 0;
             text-align: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             cursor: pointer;
             border: 1px solid transparent;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 1px;
+            gap: 2px;
             box-sizing: border-box;
         }
 
@@ -183,18 +183,18 @@
 
         .cal-day-num {
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: 0.85rem; /* Font giorno ben leggibile */
             line-height: 1;
         }
 
         .cal-day-badges {
             display: flex;
-            gap: 2px;
+            gap: 3px;
         }
 
         .dot-badge {
-            width: 4px;
-            height: 4px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
         }
 
@@ -378,7 +378,7 @@
         </div>
     </div>
 
-    <!-- VISTA MOBILE (Griglia Calendario Fissa e Ridotta) -->
+    <!-- VISTA MOBILE (Griglia Calendario Bilanciata) -->
     <div id="mobileCalendarView">
         <div class="calendar-weekdays">
             <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
@@ -501,7 +501,7 @@
 
             calCell.innerHTML = `
                 <div class="cal-day-num">${day}</div>
-                ${hasAbsence ? `<span style="font-size:0.5rem; font-weight:bold; color:#e91e63; line-height:1;">${savedData.absence}</span>` : badgesHtml}
+                ${hasAbsence ? `<span style="font-size:0.6rem; font-weight:bold; color:#e91e63; line-height:1;">${savedData.absence}</span>` : badgesHtml}
             `;
             calGrid.appendChild(calCell);
 
